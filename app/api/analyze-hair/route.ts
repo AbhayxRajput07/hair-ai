@@ -1,7 +1,7 @@
 // app/api/analyze-hair/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
-import { connectToDatabase } from "@/lib/mongodb";
+import { connectDB } from "@/lib/mongodb";
 import ScanReport from "@/lib/models/ScanReport";
 
 const openai = new OpenAI({
@@ -12,7 +12,7 @@ export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
-    await connectToDatabase();
+   await connectDB();
 
     const formData = await req.formData();
     const file = formData.get("image");

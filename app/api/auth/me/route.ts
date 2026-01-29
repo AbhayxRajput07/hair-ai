@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth";
-import { connectToDatabase } from "@/lib/mongodb";
+import { connectDB } from "@/lib/mongodb";
 import User from "@/lib/models/User";
 
 export const runtime = "nodejs";
@@ -23,7 +23,7 @@ export async function GET() {
       return NextResponse.json({ user: null }, { status: 401 });
     }
 
-    await connectToDatabase();
+    await connectDB();
 
     const user = await User.findById(decoded.id).lean();
 
