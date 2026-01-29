@@ -1,65 +1,51 @@
-// app/api/auth/login/route.ts
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { connectToDatabase } from "@/lib/mongodb";
+import jwt from "jsonwebtoken";
+import { connectDB } from "@/lib/mongodb";
 import User from "@/lib/models/User";
-import { signToken } from "@/lib/auth";
 
-export const runtime = "nodejs";
-
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    await connectToDatabase();
-
     const { email, password } = await req.json();
 
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: "Email and password are required" },
-        { status: 400 }
-      );
-    }
+    await connectDB();
 
     const user = await User.findOne({ email });
     if (!user) {
       return NextResponse.json(
-        { error: "Invalid email or password" },
+        { error: "Invalid credentials" },
         { status: 401 }
       );
     }
 
-    const valid = await bcrypt.compare(password, user.password);
-    if (!valid) {
+    const ok = await bcrypt.compare(password, user.password);
+    if (!ok) {
       return NextResponse.json(
-        { error: "Invalid email or password" },
+        { error: "Invalid credentials" },
         { status: 401 }
       );
     }
 
-    const token = signToken({ id: user._id.toString(), email: user.email });
-
-    const res = NextResponse.json(
-      {
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-        },
-      },
-      { status: 200 }
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET!,
+      { expiresIn: "7d" }
     );
+
+    const res = NextResponse.json({ success: true });
 
     res.cookies.set("token", token, {
       httpOnly: true,
-      secure: true,
       sameSite: "lax",
       path: "/",
-      maxAge: 7 * 24 * 60 * 60,
     });
 
     return res;
-  } catch (err: any) {
-    console.error("Login error:", err);
-    return NextResponse.json({ error: "Failed to login" }, { status: 500 });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      { error: "Login failed" },
+      { status: 500 }
+    );
   }
 }

@@ -30,133 +30,143 @@ export default function RoutinePage() {
 
   const scalpLine =
     data.scalpType === "oily"
-      ? "Use a gentle, sulfate-free shampoo 2–3× week. Avoid heavy oils on scalp."
+      ? "Gentle shampoo 2–3× weekly. Avoid heavy oils on scalp."
       : data.scalpType === "dry"
-      ? "Use hydrating shampoo 1–2× week. Oil scalp lightly before wash."
+      ? "Hydrating shampoo 1–2× weekly. Light oil before wash."
       : data.scalpType === "combination"
-      ? "Shampoo roots regularly, but keep conditioner/mask on lengths only."
+      ? "Clean roots, nourish lengths only."
       : data.scalpType === "normal"
-      ? "Mild shampoo 2× week is enough. Focus on maintaining balance."
-      : "First take the quiz to get a better routine.";
+      ? "Maintain balance with mild shampoo."
+      : "Take the quiz to personalise scalp care.";
 
   const hairFallLine =
     data.hairFall === "moderate" || data.hairFall === "heavy"
-      ? "Be extra gentle while combing, avoid tight hairstyles, and ensure protein + iron in diet."
+      ? "Be gentle, avoid tight styles, focus on protein & iron."
       : data.hairFall === "light"
-      ? "Normal light hair fall — keep a healthy routine and avoid stress."
+      ? "Light shedding — maintain routine."
       : data.hairFall === "none"
-      ? "Hair fall looks minimal. Maintain your routine and avoid harsh changes."
-      : "Take the quiz so we can understand your hair fall level.";
+      ? "Minimal hair fall — keep it consistent."
+      : "Quiz required for hair fall routine.";
 
   const goalLine =
     data.goal === "dandruff"
-      ? "Use anti-dandruff shampoo 1–2× week and keep scalp clean and dry."
+      ? "Anti-dandruff shampoo 1–2× weekly."
       : data.goal === "growth"
-      ? "Regular scalp massage, good sleep, and protein-rich food will support growth."
+      ? "Scalp massage, protein diet, proper sleep."
       : data.goal === "shine"
-      ? "Use serum on lengths, avoid overwashing, and finish with cool water rinse."
+      ? "Serum on lengths, avoid overwashing."
       : data.goal === "strength"
-      ? "Include protein treatments sometimes and avoid rough towel rubbing."
-      : "Pick a main goal in the quiz to personalise this more.";
+      ? "Protein treatments, gentle handling."
+      : "Choose a goal in quiz.";
 
   const stylingLine =
     data.styling === "daily"
-      ? "Daily heat is risky — try to reduce to 1–2× week and ALWAYS use heat protectant."
+      ? "Reduce heat; always use heat protectant."
       : data.styling === "often"
-      ? "Use heat protectant and try more heat-free styles."
+      ? "Prefer heat-free styles when possible."
       : data.styling === "sometimes"
-      ? "Good that you don’t overdo heat; still use protectant whenever you style."
+      ? "Occasional heat is fine with protection."
       : data.styling === "never"
-      ? "Great, minimal heat damage!"
-      : "Answer the styling question in the quiz.";
+      ? "Great! Minimal heat damage."
+      : "Answer styling question in quiz.";
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 flex justify-center">
-      <div className="max-w-3xl w-full bg-white shadow-xl rounded-2xl p-8 space-y-6">
-        <h1 className="text-3xl md:text-4xl font-bold text-center mb-2">
-          Your Daily & Weekly Hair Routine
-        </h1>
-        <p className="text-center text-gray-700 mb-4">
-          This routine is auto-generated from your quiz answers. Complete the
-          quiz first for a more accurate plan.
-        </p>
+    <div className="min-h-screen pt-28 bg-gradient-to-b from-[#0b1020] via-[#07090f] to-black text-white px-4">
+      <div className="max-w-6xl mx-auto space-y-14">
 
-        {/* Quick profile */}
-        <div className="bg-gray-100 p-4 rounded-xl text-sm md:text-base">
-          <p>
-            <strong>Scalp Type:</strong>{" "}
-            {data.scalpType || "Not set (take quiz)"}
-          </p>
-          <p>
-            <strong>Hair Fall:</strong>{" "}
-            {data.hairFall || "Not set (take quiz)"}
-          </p>
-          <p>
-            <strong>Main Goal:</strong> {data.goal || "Not set (take quiz)"}
-          </p>
-          <p>
-            <strong>Heat Styling:</strong>{" "}
-            {data.styling || "Not set (take quiz)"}
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-4">
+            <span className="block">Your Hair</span>
+            <span className="block bg-gradient-to-r from-[#7c7cff] to-[#4fd1c5] bg-clip-text text-transparent">
+              Daily Routine
+            </span>
+          </h1>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            Auto-generated from your quiz answers. Follow daily for visible
+            improvement.
           </p>
         </div>
 
-        {/* Daily routine */}
-        <section className="space-y-3">
-          <h2 className="text-2xl font-semibold">🗓 Daily Routine</h2>
-          <div className="bg-gray-100 p-4 rounded-xl text-sm md:text-base text-gray-700 space-y-2">
-            <p>
-              <strong>Morning:</strong> Keep hair tied loosely, avoid very tight
-              ponytails. If going out, use a light serum on lengths, not on
-              scalp.
-            </p>
-            <p>
-              <strong>Night:</strong> Comb gently from ends to roots, tie hair
-              in a loose braid or bun. Use a soft pillow cover (cotton/satin).
-            </p>
-            <p>
-              <strong>Scalp focus:</strong> {scalpLine}
-            </p>
-            <p>
-              <strong>Hair fall care:</strong> {hairFallLine}
-            </p>
+        {/* Profile Summary */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            ["Scalp", data.scalpType],
+            ["Hair Fall", data.hairFall],
+            ["Goal", data.goal],
+            ["Heat", data.styling],
+          ].map(([label, value]) => (
+            <div
+              key={label}
+              className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center"
+            >
+              <p className="text-xs text-gray-400">{label}</p>
+              <p className="font-semibold capitalize">
+                {value || "Not set"}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Daily Routine */}
+        <section>
+          <h2 className="text-2xl font-bold mb-6">🌞 Daily Routine</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-3">
+              <h3 className="font-semibold text-lg">Morning</h3>
+              <p className="text-gray-300 text-sm">
+                Keep hair loosely tied. Use light serum on lengths only.
+              </p>
+              <p className="text-gray-400 text-sm">
+                <strong>Scalp:</strong> {scalpLine}
+              </p>
+            </div>
+
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-3">
+              <h3 className="font-semibold text-lg">Night</h3>
+              <p className="text-gray-300 text-sm">
+                Gently comb, loose braid/bun, soft pillow cover.
+              </p>
+              <p className="text-gray-400 text-sm">
+                <strong>Hair fall care:</strong> {hairFallLine}
+              </p>
+            </div>
           </div>
         </section>
 
-        {/* Weekly routine */}
-        <section className="space-y-3">
-          <h2 className="text-2xl font-semibold">📅 Weekly Routine</h2>
-          <div className="bg-gray-100 p-4 rounded-xl text-sm md:text-base text-gray-700 space-y-2">
-            <p>
-              <strong>2× per week:</strong> Oil scalp lightly 1–2 hours before
-              washing (coconut, almond or blended oils).
-            </p>
-            <p>
-              <strong>Wash days:</strong> Use mild shampoo, focus on scalp;
-              conditioner/mask only on lengths & ends.
-            </p>
-            <p>
-              <strong>Goal based care:</strong> {goalLine}
-            </p>
-            <p>
-              <strong>Heat styling advice:</strong> {stylingLine}
-            </p>
+        {/* Weekly Routine */}
+        <section>
+          <h2 className="text-2xl font-bold mb-6">📅 Weekly Routine</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-3">
+              <h3 className="font-semibold text-lg">Wash & Oil</h3>
+              <p className="text-gray-300 text-sm">
+                Oil scalp 1–2× weekly before wash. Mild shampoo on scalp only.
+              </p>
+              <p className="text-gray-400 text-sm">
+                <strong>Goal based:</strong> {goalLine}
+              </p>
+            </div>
+
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-3">
+              <h3 className="font-semibold text-lg">Styling Care</h3>
+              <p className="text-gray-400 text-sm">
+                {stylingLine}
+              </p>
+            </div>
           </div>
         </section>
 
-        {/* Extra tips */}
-        <section className="space-y-3">
-          <h2 className="text-2xl font-semibold">✨ Extra Tips</h2>
-          <div className="bg-gray-100 p-4 rounded-xl text-sm md:text-base text-gray-700 space-y-2">
-            <p>• Drink enough water daily to support scalp hydration.</p>
-            <p>• Combine this routine with the Meal Plan for best results.</p>
-            <p>
-              • Track photos every 2–4 weeks using the Scan page to see
-              progress.
-            </p>
-          </div>
-          <p className="text-xs text-gray-500 text-center">
-            This routine is for general wellness and education only. For
-            medical issues, always consult a dermatologist.
+        {/* Extra Tips */}
+        <section className="bg-white/5 border border-white/10 rounded-2xl p-6">
+          <h2 className="text-xl font-bold mb-4">✨ Extra Tips</h2>
+          <ul className="text-gray-300 text-sm space-y-2">
+            <li>• Stay hydrated for scalp health</li>
+            <li>• Follow Meal Plans for faster results</li>
+            <li>• Track progress every 2–4 weeks using AI Scan</li>
+          </ul>
+          <p className="text-xs text-gray-500 mt-4">
+            General wellness guidance. Consult a dermatologist for medical issues.
           </p>
         </section>
       </div>

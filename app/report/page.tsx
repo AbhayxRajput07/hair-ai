@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 
 interface ReportData {
-  quizSummary: string;
   scalpType: string;
   hairFall: string;
   goal: string;
@@ -13,7 +12,6 @@ interface ReportData {
 
 export default function ReportPage() {
   const [data, setData] = useState<ReportData>({
-    quizSummary: "",
     scalpType: "",
     hairFall: "",
     goal: "",
@@ -28,7 +26,6 @@ export default function ReportPage() {
     if (typeof window === "undefined") return;
 
     setData({
-      quizSummary: localStorage.getItem("hairQuizSummary") || "",
       scalpType: localStorage.getItem("hairQuizScalpType") || "",
       hairFall: localStorage.getItem("hairQuizHairFall") || "",
       goal: localStorage.getItem("hairQuizGoal") || "",
@@ -40,8 +37,8 @@ export default function ReportPage() {
   async function handleSave() {
     setSaveMessage(null);
 
-    if (!data.quizSummary && !data.scanResult) {
-      setSaveMessage("Please complete quiz and scan before saving your report.");
+    if (!data.scalpType && !data.scanResult) {
+      setSaveMessage("Please complete quiz and scan to generate your report.");
       return;
     }
 
@@ -56,26 +53,17 @@ export default function ReportPage() {
       const res = await fetch("/api/report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          scalpType: data.scalpType,
-          hairFall: data.hairFall,
-          goal: data.goal,
-          styling: data.styling,
-          quizSummary: data.quizSummary,
-          scanResult: data.scanResult,
-        }),
+        body: JSON.stringify({ email, ...data }),
       });
 
       const json = await res.json();
 
-      if (json.success) {
-        setSaveMessage("Report saved successfully to your account!");
-      } else {
-        setSaveMessage("Failed to save report. Please try again.");
-      }
-    } catch (err) {
-      console.error(err);
+      setSaveMessage(
+        json.success
+          ? "Report saved successfully to your account."
+          : "Failed to save report."
+      );
+    } catch {
       setSaveMessage("Error while saving report.");
     } finally {
       setSaving(false);
@@ -83,83 +71,105 @@ export default function ReportPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 flex justify-center">
-      <div className="max-w-3xl w-full bg-white shadow-xl rounded-2xl p-8">
-        <h1 className="text-4xl font-bold text-gray-900 text-center mb-6">
-          Your Hair Wellness Report
-        </h1>
+    <div className="min-h-screen pt-28 bg-gradient-to-b from-[#0b1020] via-[#07090f] to-black text-white px-4">
+      <div className="max-w-6xl mx-auto space-y-14">
 
-        {/* Save button */}
-        <div className="flex justify-center mb-4">
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-4">
+            <span className="block">Your Hair</span>
+            <span className="block bg-gradient-to-r from-[#7c7cff] to-[#4fd1c5] bg-clip-text text-transparent">
+              Wellness Report
+            </span>
+          </h1>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            This report is generated using your quiz answers and hair scan.
+          </p>
+        </div>
+
+        {/* Save Button */}
+        <div className="flex justify-center">
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-6 py-3 bg-black text-white rounded-full shadow-md hover:bg-gray-800 transition text-sm disabled:opacity-50"
+            className="px-8 py-3 rounded-full bg-gradient-to-r from-[#7c7cff] to-[#4fd1c5] text-black font-semibold shadow-xl hover:scale-105 transition disabled:opacity-50"
           >
-            {saving ? "Saving..." : "Save Report to My Account"}
+            {saving ? "Saving Report..." : "Save Report"}
           </button>
         </div>
+
         {saveMessage && (
-          <p className="text-center text-sm text-gray-700 mb-4">
-            {saveMessage}
-          </p>
+          <p className="text-center text-sm text-gray-400">{saveMessage}</p>
         )}
 
-        {/* Quiz Summary */}
-        <section className="mb-6">
-          <h2 className="text-2xl font-semibold mb-2">📋 Quiz Summary</h2>
-
-          <div className="bg-gray-100 p-4 rounded-xl space-y-1 text-sm md:text-base">
-            <p>
-              <strong>Scalp Type:</strong>{" "}
-              {data.scalpType || "Not answered yet"}
-            </p>
-            <p>
-              <strong>Hair Fall Level:</strong>{" "}
-              {data.hairFall || "Not answered yet"}
-            </p>
-            <p>
-              <strong>Main Goal:</strong> {data.goal || "Not answered yet"}
-            </p>
-            <p>
-              <strong>Heat Styling:</strong>{" "}
-              {data.styling || "Not answered yet"}
-            </p>
-          </div>
-
-          <div className="mt-3 bg-gray-100 p-4 rounded-xl">
-            <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
-              {data.quizSummary || "No quiz summary available yet."}
-            </p>
+        {/* Profile Summary */}
+        <section>
+          <h2 className="text-2xl font-bold mb-6">📋 Your Hair Profile</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              ["Scalp Type", data.scalpType],
+              ["Hair Fall", data.hairFall],
+              ["Goal", data.goal],
+              ["Heat Styling", data.styling],
+            ].map(([label, value]) => (
+              <div
+                key={label}
+                className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center"
+              >
+                <p className="text-xs text-gray-400">{label}</p>
+                <p className="font-semibold capitalize">
+                  {value || "Not available"}
+                </p>
+              </div>
+            ))}
           </div>
         </section>
 
-        {/* Scan Summary */}
-        <section className="mb-6">
-          <h2 className="text-2xl font-semibold mb-2">📷 Scan Analysis</h2>
-          <div className="bg-gray-100 p-4 rounded-xl">
-            <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
-              {data.scanResult || "No scan analysis done yet."}
-            </p>
+        {/* Scan Result */}
+        <section>
+          <h2 className="text-2xl font-bold mb-4">📷 Scan Analysis</h2>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-gray-300 text-sm leading-relaxed">
+            {data.scanResult || "No scan analysis available yet."}
+          </div>
+        </section>
+
+        {/* Smart Insights */}
+        <section>
+          <h2 className="text-2xl font-bold mb-4">💡 Key Insights</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+              <h3 className="font-semibold mb-2">Scalp & Hair Care</h3>
+              <p className="text-gray-300 text-sm">
+                Based on your scalp type and hair fall level, follow a gentle
+                routine with minimal heat and consistent nourishment.
+              </p>
+            </div>
+
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+              <h3 className="font-semibold mb-2">Lifestyle Impact</h3>
+              <p className="text-gray-300 text-sm">
+                Sleep, stress, diet and styling habits directly affect your hair
+                growth cycle. Consistency is more important than perfection.
+              </p>
+            </div>
           </div>
         </section>
 
         {/* Recommendations */}
         <section>
-          <h2 className="text-2xl font-semibold mb-2">
-            💡 General Recommendations
+          <h2 className="text-2xl font-bold mb-4">
+            ✅ Recommended Next Steps
           </h2>
-          <div className="bg-gray-100 p-4 rounded-xl space-y-2 text-gray-700 text-sm md:text-base">
-            <p>• Avoid harsh shampoos — use gentle sulfate-free ones.</p>
-            <p>• Oil your scalp 1–2 times a week with coconut or almond oil.</p>
-            <p>• Use conditioner/mask mainly on mid-lengths and ends.</p>
-            <p>• Avoid daily heat styling; always use a heat protectant.</p>
-            <p>• Maintain a protein-rich diet (dal, paneer, eggs, nuts).</p>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-sm text-gray-300 space-y-2">
+            <p>• Follow your personalised Routine daily.</p>
+            <p>• Use Meal Plan for internal nourishment.</p>
+            <p>• Avoid harsh shampoos and frequent heat.</p>
+            <p>• Re-scan every 3–4 weeks to track progress.</p>
           </div>
 
-          <p className="text-xs text-gray-500 mt-4 text-center">
-            This report is for general wellness only, not a medical diagnosis.
-            Please consult a dermatologist for serious hair or scalp issues.
+          <p className="text-xs text-gray-500 mt-6 text-center">
+            This report is for general wellness only. For medical conditions,
+            consult a dermatologist.
           </p>
         </section>
       </div>
